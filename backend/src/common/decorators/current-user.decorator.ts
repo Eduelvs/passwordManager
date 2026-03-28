@@ -1,6 +1,8 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
-export type JwtUser = { sub: string; email: string };
+import type { UserRole } from '../user-role';
+
+export type JwtUser = { sub: string; email: string; typeUser: UserRole };
 
 type RequestWithUser = { user?: JwtUser };
 

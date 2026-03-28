@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { Password as PasswordRow } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import type { UserRole } from '../common/user-role';
 import { CreatePasswordDto } from './dto/create-password.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 
@@ -45,18 +46,21 @@ export class PasswordService {
     return this.toEntry(row);
   }
 
-  async list(userId: string): Promise<PasswordEntry[]> {
+  async list(userId: string, typeUser: UserRole): Promise<PasswordEntry[]> {
     const rows = await this.prisma.password.findMany({
-      where: { userId },
+      where: typeUser === 'admin' ? {} : { userId },
       orderBy: { updatedAt: 'desc' },
     });
     return rows.map((r) => this.toEntry(r));
   }
 
-  /** Sempre filtra por `id` + `userId` — nunca expõe registo de outro utilizador (nem por 403). */
-  async getOne(userId: string, id: string): Promise<PasswordEntry> {
+  async getOne(
+    userId: string,
+    id: string,
+    typeUser: UserRole,
+  ): Promise<PasswordEntry> {
     const row = await this.prisma.password.findFirst({
-      where: { id, userId },
+      where: typeUser === 'admin' ? { id } : { id, userId },
     });
     if (!row) {
       throw new NotFoundException('Registro não encontrado');
@@ -68,8 +72,9 @@ export class PasswordService {
     userId: string,
     id: string,
     dto: UpdatePasswordDto,
+    typeUser: UserRole,
   ): Promise<PasswordEntry> {
-    await this.getOne(userId, id);
+    await this.getOne(userId, id, typeUser);
     const row = await this.prisma.password.update({
       where: { id },
       data: {
@@ -82,9 +87,9 @@ export class PasswordService {
     return this.toEntry(row);
   }
 
-  async delete(userId: string, id: string): Promise<void> {
+  async delete(userId: string, id: string, typeUser: UserRole): Promise<void> {
     const result = await this.prisma.password.deleteMany({
-      where: { id, userId },
+      where: typeUser === 'admin' ? { id } : { id, userId },
     });
     if (result.count === 0) {
       throw new NotFoundException('Registro não encontrado');

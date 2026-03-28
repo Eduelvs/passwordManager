@@ -30,15 +30,19 @@ export class PasswordController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar senhas do usuário' })
+  @ApiOperation({
+    summary: 'Listar senhas',
+    description:
+      'Utilizador: só as próprias. Admin: todas as senhas do sistema.',
+  })
   list(@CurrentUser() user: JwtUser) {
-    return this.passwords.list(user.sub);
+    return this.passwords.list(user.sub, user.typeUser);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Visualizar um registro' })
   getOne(@CurrentUser() user: JwtUser, @Param('id') id: string) {
-    return this.passwords.getOne(user.sub, id);
+    return this.passwords.getOne(user.sub, id, user.typeUser);
   }
 
   @Patch(':id')
@@ -48,13 +52,13 @@ export class PasswordController {
     @Param('id') id: string,
     @Body() dto: UpdatePasswordDto,
   ) {
-    return this.passwords.update(user.sub, id, dto);
+    return this.passwords.update(user.sub, id, dto, user.typeUser);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Remover registro' })
   async remove(@CurrentUser() user: JwtUser, @Param('id') id: string) {
-    await this.passwords.delete(user.sub, id);
+    await this.passwords.delete(user.sub, id, user.typeUser);
     return { ok: true as const };
   }
 }
