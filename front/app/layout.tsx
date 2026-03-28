@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
+import { QueryProvider } from "@/components/query-provider";
 import "./globals.css";
 
 const geistMono = Geist_Mono({
@@ -24,7 +25,7 @@ export default function RootLayout({
         className={`${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        {children}
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );

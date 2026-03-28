@@ -3,7 +3,7 @@
 import { GL } from "@/components/gl";
 import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
-import { useLoginMutation } from "@/services/mutations/auth";
+import { useRegisterMutation } from "@/services/mutations/auth";
 import { ApiError } from "@/services/api/api";
 import { Leva } from "leva";
 import Link from "next/link";
@@ -14,9 +14,9 @@ import { toast } from "sonner";
 const fieldClass =
   "w-full h-14 px-4 rounded-lg bg-white/[0.06] border border-border font-mono text-sm text-foreground placeholder:text-foreground/35 outline-none transition-[border-color,box-shadow] duration-200 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/25";
 
-export default function SignIn() {
+export default function SignUp() {
   const router = useRouter();
-  const login = useLoginMutation();
+  const register = useRegisterMutation();
   const [formActive, setFormActive] = useState(false);
   const [buttonHover, setButtonHover] = useState(false);
   const hovering = formActive || buttonHover;
@@ -34,11 +34,11 @@ export default function SignIn() {
     const password = String(fd.get("password") ?? "");
     if (!email || !password) return;
 
-    login.mutate(
+    register.mutate(
       { email, password },
       {
         onSuccess: () => {
-          toast.success("Sessão iniciada");
+          toast.success("Conta criada");
           router.push("/password/consult");
           router.refresh();
         },
@@ -46,7 +46,7 @@ export default function SignIn() {
           const msg =
             err instanceof ApiError
               ? err.message
-              : "Não foi possível entrar. Tente novamente.";
+              : "Não foi possível cadastrar. Tente novamente.";
           toast.error(msg);
         },
       },
@@ -77,10 +77,10 @@ export default function SignIn() {
           >
             <div className="mb-8 text-center">
               <h1 className="font-sentient text-3xl sm:text-4xl tracking-tight">
-                Entrar na conta
+                Criar conta
               </h1>
               <p className="mt-3 font-mono text-sm text-foreground/55 text-balance">
-                Autentique-se para continuar ao seu cofre de senhas.
+                Cadastre-se para guardar as suas senhas com segurança.
               </p>
             </div>
 
@@ -92,68 +92,61 @@ export default function SignIn() {
             >
               <div className="space-y-2">
                 <label
-                  htmlFor="signin-email"
+                  htmlFor="signup-email"
                   className="block font-mono text-xs uppercase tracking-widest text-foreground/45"
                 >
                   E-mail
                 </label>
                 <input
-                  id="signin-email"
+                  id="signup-email"
                   name="email"
                   type="email"
                   autoComplete="email"
                   placeholder="voce@exemplo.com"
                   className={fieldClass}
                   required
-                  disabled={login.isPending}
+                  disabled={register.isPending}
                 />
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between gap-2">
-                  <label
-                    htmlFor="signin-password"
-                    className="block font-mono text-xs uppercase tracking-widest text-foreground/45"
-                  >
-                    Senha
-                  </label>
-                  <button
-                    type="button"
-                    className="font-mono text-xs text-primary/90 underline-offset-4 hover:underline hover:text-primary"
-                  >
-                    Esqueci a senha
-                  </button>
-                </div>
+                <label
+                  htmlFor="signup-password"
+                  className="block font-mono text-xs uppercase tracking-widest text-foreground/45"
+                >
+                  Senha
+                </label>
                 <input
-                  id="signin-password"
+                  id="signup-password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
-                  placeholder="••••••••"
+                  autoComplete="new-password"
+                  placeholder="mínimo 6 caracteres"
                   className={fieldClass}
                   required
-                  disabled={login.isPending}
+                  minLength={6}
+                  disabled={register.isPending}
                 />
               </div>
 
               <button
                 type="submit"
-                disabled={login.isPending}
+                disabled={register.isPending}
                 onMouseEnter={() => setButtonHover(true)}
                 onMouseLeave={() => setButtonHover(false)}
                 className="mt-2 w-full rounded-full h-14 text-base bg-primary text-black flex items-center justify-center cursor-pointer hover:bg-primary/80 transition-all duration-300 font-bold disabled:opacity-60 disabled:pointer-events-none"
               >
-                {login.isPending ? "Entrando…" : "Entrar"}
+                {register.isPending ? "Criando…" : "Cadastrar"}
               </button>
             </form>
 
             <p className="mt-8 text-center font-mono text-xs text-foreground/45">
-              Ainda não tem conta?{" "}
+              Já tem conta?{" "}
               <Link
-                href="/sign-up"
+                href="/sign-in"
                 className="text-primary/90 underline-offset-4 hover:underline hover:text-primary"
               >
-                Criar conta
+                Entrar
               </Link>
             </p>
           </div>

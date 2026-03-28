@@ -6,14 +6,20 @@ import { useState } from "react";
 import { Leva } from "leva";
 import { GL } from "@/components/gl";
 import { Logo } from "@/components/logo";
-import { appendVault } from "@/lib/vault-mock";
 import { cn } from "@/lib/utils";
+import { useCreatePasswordMutation } from "@/services/mutations/password";
+import { ApiError } from "@/services/api/api";
+import { toast } from "sonner";
 
 const fieldClass =
   "w-full h-12 px-4 rounded-lg bg-white/[0.06] border border-border font-mono text-sm text-foreground placeholder:text-foreground/35 outline-none transition-[border-color,box-shadow] duration-200 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/25";
 
+const textareaClass =
+  "w-full min-h-[88px] px-4 py-3 rounded-lg bg-white/[0.06] border border-border font-mono text-sm text-foreground placeholder:text-foreground/35 outline-none transition-[border-color,box-shadow] duration-200 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/25 resize-y";
+
 export default function PasswordCreatePage() {
   const router = useRouter();
+  const create = useCreatePasswordMutation();
   const [formActive, setFormActive] = useState(false);
   const [btnHover, setBtnHover] = useState(false);
   const hovering = formActive || btnHover;
@@ -27,14 +33,34 @@ export default function PasswordCreatePage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const platform = String(fd.get("platform") ?? "").trim();
-    const login = String(fd.get("login") ?? "").trim();
-    const password = String(fd.get("password") ?? "");
-    if (!platform || !login || !password) return;
+    const title = String(fd.get("platform") ?? "").trim();
+    const username = String(fd.get("login") ?? "").trim();
+    const secret = String(fd.get("password") ?? "");
+    const notesRaw = String(fd.get("notes") ?? "").trim();
+    if (!title || !secret) return;
 
-    appendVault({ platform, login, password });
-    e.currentTarget.reset();
-    router.push("/password/consult");
+    create.mutate(
+      {
+        title,
+        secret,
+        ...(username ? { username } : {}),
+        ...(notesRaw ? { notes: notesRaw } : {}),
+      },
+      {
+        onSuccess: () => {
+          toast.success("Senha guardada");
+          e.currentTarget.reset();
+          router.push("/password/consult");
+        },
+        onError: (err) => {
+          const msg =
+            err instanceof ApiError
+              ? err.message
+              : "Não foi possível guardar.";
+          toast.error(msg);
+        },
+      },
+    );
   };
 
   return (
@@ -66,14 +92,14 @@ export default function PasswordCreatePage() {
               className={cn(
                 "rounded-2xl border border-border/70 bg-black/50 p-8 shadow-[0_0_0_1px_rgba(255,199,0,0.05)] backdrop-blur-md transition-[box-shadow,background-color] duration-500 md:p-10",
                 formActive &&
-                  "bg-black/55 shadow-[0_0_50px_-16px_rgba(255,199,0,0.12)]"
+                  "bg-black/55 shadow-[0_0_50px_-16px_rgba(255,199,0,0.12)]",
               )}
             >
               <h1 className="font-sentient text-3xl tracking-tight">
                 Nova senha
               </h1>
               <p className="mt-2 font-mono text-sm text-foreground/50">
-                Mock local — dados ficam só neste navegador.
+                Os dados são guardados na sua conta (API).
               </p>
 
               <form
@@ -82,66 +108,85 @@ export default function PasswordCreatePage() {
                 onFocusCapture={() => setFormActive(true)}
                 onBlurCapture={handleFormBlurCapture}
               >
-          <div className="space-y-2">
-            <label
-              htmlFor="platform"
-              className="font-mono text-xs uppercase tracking-widest text-foreground/45"
-            >
-              Plataforma
-            </label>
-            <input
-              id="platform"
-              name="platform"
-              className={fieldClass}
-              placeholder="ex. GitHub"
-              autoComplete="off"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <label
-              htmlFor="login"
-              className="font-mono text-xs uppercase tracking-widest text-foreground/45"
-            >
-              Login
-            </label>
-            <input
-              id="login"
-              name="login"
-              className={fieldClass}
-              placeholder="e-mail ou usuário"
-              autoComplete="username"
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <label
-              htmlFor="password"
-              className="font-mono text-xs uppercase tracking-widest text-foreground/45"
-            >
-              Senha
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              className={fieldClass}
-              placeholder="••••••••"
-              autoComplete="new-password"
-              required
-            />
-          </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="platform"
+                    className="font-mono text-xs uppercase tracking-widest text-foreground/45"
+                  >
+                    Plataforma
+                  </label>
+                  <input
+                    id="platform"
+                    name="platform"
+                    className={fieldClass}
+                    placeholder="ex. GitHub"
+                    autoComplete="off"
+                    required
+                    disabled={create.isPending}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="login"
+                    className="font-mono text-xs uppercase tracking-widest text-foreground/45"
+                  >
+                    Login
+                  </label>
+                  <input
+                    id="login"
+                    name="login"
+                    className={fieldClass}
+                    placeholder="e-mail ou usuário (opcional)"
+                    autoComplete="username"
+                    disabled={create.isPending}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="password"
+                    className="font-mono text-xs uppercase tracking-widest text-foreground/45"
+                  >
+                    Senha
+                  </label>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    className={fieldClass}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    required
+                    disabled={create.isPending}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="notes"
+                    className="font-mono text-xs uppercase tracking-widest text-foreground/45"
+                  >
+                    Notas
+                  </label>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    className={textareaClass}
+                    placeholder="Opcional"
+                    rows={3}
+                    disabled={create.isPending}
+                  />
+                </div>
 
                 <button
                   type="submit"
                   onMouseEnter={() => setBtnHover(true)}
                   onMouseLeave={() => setBtnHover(false)}
+                  disabled={create.isPending}
                   className={cn(
                     "w-full rounded-lg border border-primary bg-primary/10 py-3 font-mono text-sm uppercase tracking-wider text-primary transition-colors",
-                    "hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                    "hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-50",
                   )}
                 >
-                  Salvar
+                  {create.isPending ? "A guardar…" : "Salvar"}
                 </button>
               </form>
             </div>
