@@ -31,4 +31,9 @@ export const passwordApi = {
       method: "PATCH",
       body: JSON.stringify(body),
     }),
+
+  remove: (id: string) =>
+    apiFetch<{ ok: boolean }>(`/passwords/${id}`, {
+      method: "DELETE",
+    }),
 };

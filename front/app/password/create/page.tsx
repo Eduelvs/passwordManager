@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Leva } from "leva";
 import { GL } from "@/components/gl";
-import { Logo } from "@/components/logo";
+import { EduelvsMark } from "@/components/eduelvs-mark";
+import { getStoredJwtSub } from "@/lib/jwt-sub";
 import { cn } from "@/lib/utils";
 import { useCreatePasswordMutation } from "@/services/mutations/password";
 import { ApiError } from "@/services/api/api";
@@ -20,6 +21,12 @@ const textareaClass =
 export default function PasswordCreatePage() {
   const router = useRouter();
   const create = useCreatePasswordMutation();
+
+  useEffect(() => {
+    if (!getStoredJwtSub()) {
+      router.replace("/sign-in");
+    }
+  }, [router]);
   const [formActive, setFormActive] = useState(false);
   const [btnHover, setBtnHover] = useState(false);
   const hovering = formActive || btnHover;
@@ -73,7 +80,7 @@ export default function PasswordCreatePage() {
           <header className="border-b border-border/50 bg-black/40 backdrop-blur-xl">
             <div className="container flex h-16 items-center justify-between gap-4">
               <Link href="/" aria-label="Início">
-                <Logo className="w-[80px]" />
+                <EduelvsMark variant="header" />
               </Link>
               <nav className="flex items-center gap-6 font-mono text-xs uppercase tracking-widest text-foreground/50">
                 <span className="text-primary">Nova</span>

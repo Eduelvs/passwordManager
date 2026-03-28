@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import type { Password as PasswordRow } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePasswordDto } from './dto/create-password.dto';
@@ -57,13 +53,13 @@ export class PasswordService {
     return rows.map((r) => this.toEntry(r));
   }
 
+  /** Sempre filtra por `id` + `userId` — nunca expõe registo de outro utilizador (nem por 403). */
   async getOne(userId: string, id: string): Promise<PasswordEntry> {
-    const row = await this.prisma.password.findUnique({ where: { id } });
+    const row = await this.prisma.password.findFirst({
+      where: { id, userId },
+    });
     if (!row) {
       throw new NotFoundException('Registro não encontrado');
-    }
-    if (row.userId !== userId) {
-      throw new ForbiddenException();
     }
     return this.toEntry(row);
   }
@@ -84,5 +80,14 @@ export class PasswordService {
       },
     });
     return this.toEntry(row);
+  }
+
+  async delete(userId: string, id: string): Promise<void> {
+    const result = await this.prisma.password.deleteMany({
+      where: { id, userId },
+    });
+    if (result.count === 0) {
+      throw new NotFoundException('Registro não encontrado');
+    }
   }
 }

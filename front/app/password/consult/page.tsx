@@ -1,16 +1,18 @@
 "use client";
 
+import { GL } from "@/components/gl";
+import { EduelvsMark } from "@/components/eduelvs-mark";
+import { useRedirectOn401 } from "@/hooks/use-redirect-on-401";
+import { getStoredJwtSub } from "@/lib/jwt-sub";
+import { cn } from "@/lib/utils";
+import { useLogoutMutation } from "@/services/mutations/auth";
+import { useDeletePasswordMutation } from "@/services/mutations/password";
+import { usePasswordsQuery } from "@/services/queries/password";
+import { Leva } from "leva";
 import { Eye, EyeOff, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import { Leva } from "leva";
-import { GL } from "@/components/gl";
-import { Logo } from "@/components/logo";
-import { useRedirectOn401 } from "@/hooks/use-redirect-on-401";
-import { cn } from "@/lib/utils";
-import { useLogoutMutation } from "@/services/mutations/auth";
-import { usePasswordsQuery } from "@/services/queries/password";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 const fieldClass =
@@ -25,7 +27,14 @@ export default function PasswordConsultPage() {
   const { data: items = [], isPending, error, isError } = usePasswordsQuery();
   useRedirectOn401(error);
 
+  useEffect(() => {
+    if (!getStoredJwtSub()) {
+      router.replace("/sign-in");
+    }
+  }, [router]);
+
   const logout = useLogoutMutation();
+  const removePassword = useDeletePasswordMutation();
   const [query, setQuery] = useState("");
   const [visible, setVisible] = useState<Record<string, boolean>>({});
   const [panelActive, setPanelActive] = useState(false);
@@ -44,7 +53,8 @@ export default function PasswordConsultPage() {
     return items.filter(
       (e) =>
         e.title.toLowerCase().includes(q) ||
-        (e.username?.toLowerCase().includes(q) ?? false),
+        (e.username?.toLowerCase().includes(q) ?? false) ||
+        (e.notes?.toLowerCase().includes(q) ?? false),
     );
   }, [items, query]);
 
@@ -73,7 +83,7 @@ export default function PasswordConsultPage() {
           <header className="border-b border-border/50 bg-black/40 backdrop-blur-xl">
             <div className="container flex h-16 items-center justify-between gap-4">
               <Link href="/" aria-label="Início">
-                <Logo className="w-[80px]" />
+                <EduelvsMark variant="header" />
               </Link>
               <nav className="flex items-center gap-6 font-mono text-xs uppercase tracking-widest text-foreground/50">
                 <Link
@@ -95,7 +105,7 @@ export default function PasswordConsultPage() {
             </div>
           </header>
 
-          <main className="container max-w-4xl flex-1 py-10 md:py-14">
+          <main className="container max-w-7xl flex-1 py-10 md:py-14">
             <div
               className={cn(
                 "rounded-2xl border border-border/70 bg-black/50 p-6 shadow-[0_0_0_1px_rgba(255,199,0,0.05)] backdrop-blur-md transition-[box-shadow,background-color] duration-500 md:p-10",
@@ -109,7 +119,7 @@ export default function PasswordConsultPage() {
                 Suas senhas
               </h1>
               <p className="mt-2 font-mono text-sm text-foreground/50">
-                Busque por plataforma ou login. O ícone revela a senha.
+                Busque por plataforma, login ou notas. O ícone revela a senha.
               </p>
 
               <div className="relative mt-8">
@@ -132,23 +142,28 @@ export default function PasswordConsultPage() {
                 onMouseEnter={() => setTableHot(true)}
                 onMouseLeave={() => setTableHot(false)}
               >
-                <table className="w-full min-w-[640px] border-collapse text-left font-mono text-sm">
+                <table className="w-full min-w-[880px] border-collapse text-left font-mono text-sm">
                   <thead>
                     <tr className="border-b border-border/80 bg-white/[0.03] text-xs uppercase tracking-widest text-foreground/45">
                       <th className="px-4 py-3 font-medium">Plataforma</th>
                       <th className="px-4 py-3 font-medium">Login</th>
+                      <th className="max-w-[160px] px-4 py-3 font-medium">
+                        Notas
+                      </th>
                       <th className="px-4 py-3 font-medium">Senha</th>
                       <th className="w-14 px-2 py-3 font-medium">
                         <span className="sr-only">Revelar</span>
                       </th>
-                      <th className="w-[100px] px-4 py-3 font-medium">Ação</th>
+                      <th className="min-w-[140px] px-4 py-3 font-medium">
+                        Ações
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {isPending ? (
                       <tr>
                         <td
-                          colSpan={5}
+                          colSpan={6}
                           className="px-4 py-10 text-center text-foreground/40"
                         >
                           Carregando…
@@ -157,7 +172,7 @@ export default function PasswordConsultPage() {
                     ) : isError ? (
                       <tr>
                         <td
-                          colSpan={5}
+                          colSpan={6}
                           className="px-4 py-10 text-center text-foreground/40"
                         >
                           Não foi possível carregar. Verifique se está
@@ -167,7 +182,7 @@ export default function PasswordConsultPage() {
                     ) : filtered.length === 0 ? (
                       <tr>
                         <td
-                          colSpan={5}
+                          colSpan={6}
                           className="px-4 py-10 text-center text-foreground/40"
                         >
                           Nenhum resultado.
@@ -184,6 +199,12 @@ export default function PasswordConsultPage() {
                           </td>
                           <td className="max-w-[200px] truncate px-4 py-3 text-foreground/70">
                             {row.username ?? "—"}
+                          </td>
+                          <td
+                            className="max-w-[160px] truncate px-4 py-3 text-foreground/55"
+                            title={row.notes ?? undefined}
+                          >
+                            {row.notes?.trim() ? row.notes : "—"}
                           </td>
                           <td className="px-4 py-3 text-foreground/80 tabular-nums tracking-wider">
                             {visible[row.id]
@@ -212,12 +233,36 @@ export default function PasswordConsultPage() {
                             </button>
                           </td>
                           <td className="px-4 py-3">
-                            <Link
-                              href={`/password/${row.id}/edit`}
-                              className="font-mono text-xs uppercase tracking-wide text-primary/90 underline-offset-4 transition-colors hover:text-primary hover:underline"
-                            >
-                              Editar
-                            </Link>
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                              <Link
+                                href={`/password/${row.id}/edit`}
+                                className="font-mono text-xs uppercase tracking-wide text-primary/90 underline-offset-4 transition-colors hover:text-primary hover:underline"
+                              >
+                                Editar
+                              </Link>
+                              <button
+                                type="button"
+                                disabled={removePassword.isPending}
+                                onClick={() => {
+                                  if (
+                                    !confirm(
+                                      `Apagar "${row.title}"? Esta ação não pode ser desfeita.`,
+                                    )
+                                  ) {
+                                    return;
+                                  }
+                                  removePassword.mutate(row.id, {
+                                    onSuccess: () =>
+                                      toast.success("Registo apagado"),
+                                    onError: () =>
+                                      toast.error("Não foi possível apagar"),
+                                  });
+                                }}
+                                className="font-mono text-xs uppercase tracking-wide text-red-400/90 underline-offset-4 transition-colors hover:text-red-300 hover:underline disabled:opacity-50"
+                              >
+                                Apagar
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -48,5 +49,12 @@ export class PasswordController {
     @Body() dto: UpdatePasswordDto,
   ) {
     return this.passwords.update(user.sub, id, dto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Remover registro' })
+  async remove(@CurrentUser() user: JwtUser, @Param('id') id: string) {
+    await this.passwords.delete(user.sub, id);
+    return { ok: true as const };
   }
 }

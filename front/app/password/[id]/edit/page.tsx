@@ -5,11 +5,15 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Leva } from "leva";
 import { GL } from "@/components/gl";
-import { Logo } from "@/components/logo";
+import { EduelvsMark } from "@/components/eduelvs-mark";
 import { useRedirectOn401 } from "@/hooks/use-redirect-on-401";
 import { cn } from "@/lib/utils";
+import { getStoredJwtSub } from "@/lib/jwt-sub";
 import { ApiError } from "@/services/api/api";
-import { useUpdatePasswordMutation } from "@/services/mutations/password";
+import {
+  useDeletePasswordMutation,
+  useUpdatePasswordMutation,
+} from "@/services/mutations/password";
 import { usePasswordQuery } from "@/services/queries/password";
 import { toast } from "sonner";
 
@@ -27,6 +31,7 @@ export default function PasswordEditPage() {
   useRedirectOn401(error);
 
   const update = useUpdatePasswordMutation();
+  const remove = useDeletePasswordMutation();
   const [formActive, setFormActive] = useState(false);
   const [btnHover, setBtnHover] = useState(false);
   const hovering = formActive || btnHover;
@@ -36,6 +41,12 @@ export default function PasswordEditPage() {
     if (next && e.currentTarget.contains(next)) return;
     setFormActive(false);
   };
+
+  useEffect(() => {
+    if (!getStoredJwtSub()) {
+      router.replace("/sign-in");
+    }
+  }, [router]);
 
   useEffect(() => {
     if (!isPending && isError && error instanceof ApiError && error.status === 404) {
@@ -94,7 +105,7 @@ export default function PasswordEditPage() {
           <header className="border-b border-border/50 bg-black/40 backdrop-blur-xl">
             <div className="container flex h-16 items-center justify-between gap-4">
               <Link href="/" aria-label="Início">
-                <Logo className="w-[80px]" />
+                <EduelvsMark variant="header" />
               </Link>
               <nav className="flex items-center gap-6 font-mono text-xs uppercase tracking-widest text-foreground/50">
                 <Link
@@ -214,13 +225,39 @@ export default function PasswordEditPage() {
                     type="submit"
                     onMouseEnter={() => setBtnHover(true)}
                     onMouseLeave={() => setBtnHover(false)}
-                    disabled={update.isPending}
+                    disabled={update.isPending || remove.isPending}
                     className={cn(
                       "w-full rounded-lg border border-primary bg-primary/10 py-3 font-mono text-sm uppercase tracking-wider text-primary transition-colors",
                       "hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-50",
                     )}
                   >
                     {update.isPending ? "A guardar…" : "Guardar alterações"}
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={update.isPending || remove.isPending}
+                    onClick={() => {
+                      if (
+                        !confirm(
+                          "Apagar este registo permanentemente? Esta ação não pode ser desfeita.",
+                        )
+                      ) {
+                        return;
+                      }
+                      if (!id) return;
+                      remove.mutate(id, {
+                        onSuccess: () => {
+                          toast.success("Registo apagado");
+                          router.push("/password/consult");
+                        },
+                        onError: () =>
+                          toast.error("Não foi possível apagar"),
+                      });
+                    }}
+                    className="w-full rounded-lg border border-red-500/40 bg-red-500/10 py-3 font-mono text-sm uppercase tracking-wider text-red-400 transition-colors hover:bg-red-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/30 disabled:opacity-50"
+                  >
+                    {remove.isPending ? "A apagar…" : "Apagar registo"}
                   </button>
                 </form>
               ) : null}

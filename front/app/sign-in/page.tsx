@@ -1,10 +1,10 @@
 "use client";
 
+import { EduelvsMark } from "@/components/eduelvs-mark";
 import { GL } from "@/components/gl";
-import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
-import { useLoginMutation } from "@/services/mutations/auth";
 import { ApiError } from "@/services/api/api";
+import { useLoginMutation } from "@/services/mutations/auth";
 import { Leva } from "leva";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -64,7 +64,7 @@ export default function SignIn() {
           className="fixed top-8 left-0 right-0 z-20 container flex justify-start opacity-90 transition-opacity hover:opacity-100"
           aria-label="Voltar ao início"
         >
-          <Logo className="w-[88px] md:w-[100px]" />
+          <EduelvsMark variant="hero" />
         </Link>
 
         <div className="relative z-10 w-full max-w-[440px]">

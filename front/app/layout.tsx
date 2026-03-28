@@ -1,6 +1,6 @@
+import { QueryProvider } from "@/components/query-provider";
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
-import { QueryProvider } from "@/components/query-provider";
 import "./globals.css";
 
 const geistMono = Geist_Mono({
@@ -9,8 +9,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Skal Ventures",
-  description: "Investment strategies that outperform the market",
+  title: "Eduelvs Manager",
+  description: "Gerenciador de senhas",
     generator: 'v0.app'
 };
 
