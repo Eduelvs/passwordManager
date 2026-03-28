@@ -93,7 +93,7 @@ export default function PasswordCreatePage() {
             </div>
           </header>
 
-          <main className="container flex flex-1 max-w-md flex-col py-12 md:py-20">
+          <main className="container flex flex-1 max-w-xl flex-col py-12 md:py-20">
             <div
               className={cn(
                 "rounded-2xl border border-border/70 bg-black/50 p-8 shadow-[0_0_0_1px_rgba(255,199,0,0.05)] backdrop-blur-md transition-[box-shadow,background-color] duration-500 md:p-10",
