@@ -1,15 +1,15 @@
 "use client";
 
+import { EduelvsMark } from "@/components/eduelvs-mark";
+import { GL } from "@/components/gl";
+import { getStoredJwtSub } from "@/lib/jwt-sub";
+import { cn } from "@/lib/utils";
+import { ApiError } from "@/services/api/api";
+import { useCreatePasswordMutation } from "@/services/mutations/password";
+import { Leva } from "leva";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useState } from "react";
-import { Leva } from "leva";
-import { GL } from "@/components/gl";
-import { EduelvsMark } from "@/components/eduelvs-mark";
-import { getStoredJwtSub } from "@/lib/jwt-sub";
-import { cn } from "@/lib/utils";
-import { useCreatePasswordMutation } from "@/services/mutations/password";
-import { ApiError } from "@/services/api/api";
 import { toast } from "sonner";
 
 const fieldClass =
@@ -105,7 +105,7 @@ export default function PasswordCreatePage() {
                 Nova senha
               </h1>
               <p className="mt-2 font-mono text-sm text-foreground/50">
-                Os dados são guardados na sua conta (API).
+                Os dados são guardados na sua conta.
               </p>
 
               <form

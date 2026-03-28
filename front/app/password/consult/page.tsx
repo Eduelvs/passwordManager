@@ -1,8 +1,8 @@
 "use client";
 
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
-import { GL } from "@/components/gl";
 import { EduelvsMark } from "@/components/eduelvs-mark";
+import { GL } from "@/components/gl";
 import { useRedirectOn401 } from "@/hooks/use-redirect-on-401";
 import { getStoredJwtSub } from "@/lib/jwt-sub";
 import { cn } from "@/lib/utils";
@@ -10,7 +10,7 @@ import { useLogoutMutation } from "@/services/mutations/auth";
 import { useDeletePasswordMutation } from "@/services/mutations/password";
 import { usePasswordsQuery } from "@/services/queries/password";
 import { Leva } from "leva";
-import { Eye, EyeOff, Search } from "lucide-react";
+import { Copy, Eye, EyeOff, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -65,6 +65,11 @@ export default function PasswordConsultPage() {
 
   const toggleEye = (id: string) => {
     setVisible((v) => ({ ...v, [id]: !v[id] }));
+  };
+
+  const copyPassword = (id: string) => {
+    navigator.clipboard.writeText(filtered.find((e) => e.id === id)?.secret ?? "");
+    toast.success("Senha copiada para área de transferência");
   };
 
   const handleLogout = () => {
@@ -216,6 +221,30 @@ export default function PasswordConsultPage() {
                               ? row.secret
                               : maskPassword(row.secret)}
                           </td>
+
+                                                    
+                          <td className="px-2 py-3">
+                            <button
+                              type="button"
+                              onClick={() => copyPassword(row.id)}
+                              className={cn(
+                                "inline-flex size-10 items-center justify-center rounded-md text-foreground/50 transition-colors",
+                                "hover:bg-white/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
+                              )}
+                              aria-label={
+                                visible[row.id]
+                                  ? "Copiar senha"
+                                  : "Copiar senha para área de transferência"
+                              }
+                            >
+                              {visible[row.id] ? (
+                                <Copy className="size-4" />
+                              ) : (
+                                <Copy className="size-4" />
+                              )}
+                            </button>
+                          </td>
+
                           <td className="px-2 py-3">
                             <button
                               type="button"

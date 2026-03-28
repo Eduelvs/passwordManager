@@ -70,11 +70,11 @@ export default function SignIn() {
         <div className="relative z-10 w-full max-w-[440px]">
           <div
             className={cn(
-              "rounded-2xl border border-border/70 bg-black/45 p-8 sm:p-10 shadow-[0_0_0_1px_rgba(255,199,0,0.06)] backdrop-blur-md transition-[box-shadow,background-color] duration-500",
-              formActive &&
-                "bg-black/55 shadow-[0_0_60px_-12px_rgba(255,199,0,0.15)]",
+              "auth-glass-panel rounded-2xl p-8 sm:p-10 transition-[background-color,border-color,box-shadow] duration-500",
+              formActive && "auth-glass-panel--focus"
             )}
           >
+  
             <div className="mb-8 text-center">
               <h1 className="font-sentient text-3xl sm:text-4xl tracking-tight">
                 Entrar na conta
