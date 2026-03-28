@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Password Manager",
+  "version": "1.0.0",
+  "description": "Inicie sessão na API e guarde credenciais ao submeter formulários em HTTPS.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://passwordmanager.up.railway.app/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Password Manager",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*"],
+      "all_frames": true,
+      "css": ["content.css"],
+      "js": ["api-config.js", "content.js"]
+    }
+  ]
+}

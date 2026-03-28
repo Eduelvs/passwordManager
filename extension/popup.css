@@ -1,0 +1,309 @@
+/* Alinhado a front/app/globals.css — tema escuro, vidro, mono nos campos */
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --border: #424242;
+  --foreground-muted: rgb(255 255 255 / 0.55);
+  --foreground-dim: rgb(255 255 255 / 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 360px;
+  max-width: 420px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
+}
+
+.pm-popup {
+  padding: 1.5rem 1.25rem 1.75rem;
+}
+
+.pm-glass {
+  isolation: isolate;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 1rem;
+  background-color: rgb(255 255 255 / 0.1);
+  -webkit-backdrop-filter: blur(32px) saturate(1.15);
+  backdrop-filter: blur(32px) saturate(1.15);
+  box-shadow:
+    0 12px 48px rgb(0 0 0 / 0.35),
+    inset 0 1px 0 0 rgb(255 255 255 / 0.12);
+  padding: 1.75rem 1.5rem 1.5rem;
+}
+
+.pm-glass--focus {
+  border-color: rgb(255 255 255 / 0.22);
+  background-color: rgb(255 255 255 / 0.14);
+  box-shadow:
+    0 16px 56px rgb(0 0 0 / 0.4),
+    0 0 44px -8px rgb(255 255 255 / 0.12),
+    inset 0 1px 0 0 rgb(255 255 255 / 0.16);
+}
+
+.pm-title {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.pm-sub {
+  margin: 0.75rem 0 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--foreground-muted);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.pm-form {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.pm-field label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--foreground-dim);
+}
+
+.pm-input {
+  width: 100%;
+  height: 3.25rem;
+  padding: 0 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: rgb(255 255 255 / 0.06);
+  color: var(--foreground);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.pm-input::placeholder {
+  color: rgb(255 255 255 / 0.35);
+}
+
+.pm-input:focus-visible {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.25);
+}
+
+.pm-input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pm-btn-primary {
+  margin-top: 0.25rem;
+  width: 100%;
+  height: 3.5rem;
+  border: none;
+  border-radius: 9999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.pm-btn-primary:hover:not(:disabled) {
+  background: rgb(255 255 255 / 0.8);
+}
+
+.pm-btn-primary:disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.pm-btn-ghost {
+  margin-top: 0.35rem;
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  background: transparent;
+  color: rgb(255 255 255 / 0.75);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.pm-btn-ghost:hover {
+  color: var(--primary);
+}
+
+.pm-msg {
+  margin: 0.85rem 0 0;
+  min-height: 1.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--foreground-muted);
+}
+
+.pm-msg.pm-msg--error {
+  color: #f87171;
+}
+
+.pm-msg.pm-msg--ok {
+  color: rgb(255 255 255 / 0.85);
+}
+
+.pm-footer {
+  margin-top: 1.75rem;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  color: var(--foreground-dim);
+}
+
+.pm-footer a {
+  color: rgb(255 255 255 / 0.9);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.pm-footer a:hover {
+  color: var(--primary);
+}
+
+.pm-footer.pm-footer--hidden {
+  display: none;
+}
+
+.pm-session-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 0.06);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--foreground-dim);
+}
+
+.pm-session-bar--on {
+  color: rgb(255 255 255 / 0.75);
+}
+
+.pm-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.25);
+}
+
+.pm-session-bar--on .pm-dot {
+  background: #4ade80;
+  box-shadow: 0 0 8px rgb(74 222 128 / 0.5);
+}
+
+.pm-view--hidden {
+  display: none !important;
+}
+
+.pm-iframe-wrap {
+  margin-top: 1rem;
+  width: 100%;
+  height: min(420px, 55vh);
+  min-height: 280px;
+  border-radius: 0.65rem;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  background: rgb(0 0 0 / 0.35);
+}
+
+.pm-iframe-wrap--hidden {
+  display: none !important;
+}
+
+.pm-vault-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.pm-iframe-hint {
+  margin: 0.65rem 0 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.65rem;
+  line-height: 1.4;
+  color: var(--foreground-dim);
+  text-align: center;
+}
+
+.pm-iframe-hint--hidden {
+  display: none !important;
+}
+
+.pm-quick-section {
+  margin-top: 1.25rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid rgb(255 255 255 / 0.1);
+}
+
+.pm-quick-label {
+  margin: 0 0 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--foreground-dim);
+  text-align: center;
+}
+
+.pm-form--compact {
+  margin-top: 0;
+  gap: 0.85rem;
+}
+
+.pm-optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  color: rgb(255 255 255 / 0.35);
+  font-size: 0.6rem;
+}
+
+body.pm-body--tall {
+  min-height: 520px;
+}

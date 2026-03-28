@@ -1,0 +1,106 @@
+/* Diálogo da extensão — prefixo pm-ext- para evitar colisão com a página */
+
+.pm-ext-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483646;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
+}
+
+.pm-ext-overlay--visible {
+  opacity: 1;
+}
+
+.pm-ext-dialog {
+  width: 100%;
+  max-width: 380px;
+  border-radius: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  background-color: rgb(255 255 255 / 0.1);
+  -webkit-backdrop-filter: blur(32px) saturate(1.15);
+  backdrop-filter: blur(32px) saturate(1.15);
+  box-shadow:
+    0 12px 48px rgb(0 0 0 / 0.45),
+    inset 0 1px 0 0 rgb(255 255 255 / 0.12);
+  padding: 1.5rem 1.35rem 1.25rem;
+  color: #fff;
+}
+
+.pm-ext-title {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.35rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.pm-ext-site {
+  margin: 0.65rem 0 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  color: rgb(255 255 255 / 0.7);
+  text-align: center;
+  word-break: break-all;
+}
+
+.pm-ext-hint {
+  margin: 0.85rem 0 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.7rem;
+  line-height: 1.45;
+  color: rgb(255 255 255 / 0.5);
+  text-align: center;
+}
+
+.pm-ext-actions {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: 1.35rem;
+}
+
+.pm-ext-btn {
+  flex: 1;
+  height: 2.85rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition:
+    background 0.2s,
+    opacity 0.2s;
+}
+
+.pm-ext-btn--primary {
+  background: #fff;
+  color: #000;
+}
+
+.pm-ext-btn--primary:hover {
+  background: rgb(255 255 255 / 0.85);
+}
+
+.pm-ext-btn--ghost {
+  background: rgb(255 255 255 / 0.08);
+  color: rgb(255 255 255 / 0.9);
+  border: 1px solid rgb(255 255 255 / 0.2);
+}
+
+.pm-ext-btn--ghost:hover {
+  background: rgb(255 255 255 / 0.14);
+}

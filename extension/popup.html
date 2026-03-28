@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Password Manager</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="pm-popup">
+    <div id="glass" class="pm-glass">
+      <div id="sessionBar" class="pm-session-bar" aria-live="polite">
+        <span class="pm-dot" aria-hidden="true"></span>
+        <span id="sessionLabel">A verificar sessão…</span>
+      </div>
+
+      <!-- Vista: login -->
+      <div id="viewLogin" class="pm-view">
+        <div class="pm-header">
+          <h1 class="pm-title">Entrar na conta</h1>
+          <p class="pm-sub">
+            Autentique-se para usar o cofre no iframe ou a entrada rápida abaixo.
+          </p>
+        </div>
+
+        <form id="loginForm" class="pm-form" autocomplete="on">
+          <div class="pm-field">
+            <label for="email">E-mail</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              class="pm-input"
+              placeholder="voce@exemplo.com"
+              autocomplete="email"
+              required
+            />
+          </div>
+          <div class="pm-field">
+            <label for="password">Senha</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              class="pm-input"
+              placeholder="••••••••"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+          <button id="submitBtn" type="submit" class="pm-btn-primary">Entrar</button>
+          <p id="msg" class="pm-msg" role="status" aria-live="polite"></p>
+        </form>
+
+        <p id="signupFooter" class="pm-footer pm-footer--hidden">
+          Ainda não tem conta?
+          <a id="signupLink" href="#" target="_blank" rel="noopener noreferrer">Criar conta</a>
+        </p>
+      </div>
+
+      <!-- Vista: logado — cofre (iframe + entrada rápida) -->
+      <div id="viewLoggedIn" class="pm-view pm-view--hidden">
+        <div class="pm-header">
+          <h1 class="pm-title">Cofre</h1>
+          <p id="vaultSub" class="pm-sub">
+            Gira e cadastre senhas no site embebido. Use a entrada rápida se o iframe não carregar.
+          </p>
+        </div>
+
+        <div id="iframeWrap" class="pm-iframe-wrap pm-iframe-wrap--hidden">
+          <iframe
+            id="vaultFrame"
+            class="pm-vault-frame"
+            title="Cofre Password Manager"
+            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+          ></iframe>
+        </div>
+
+        <p id="iframeHint" class="pm-iframe-hint pm-iframe-hint--hidden"></p>
+
+        <div id="quickSection" class="pm-quick-section">
+          <p class="pm-quick-label">Entrada rápida</p>
+          <form id="quickSaveForm" class="pm-form pm-form--compact" autocomplete="off">
+            <div class="pm-field">
+              <label for="entryTitle">Título</label>
+              <input
+                id="entryTitle"
+                name="title"
+                type="text"
+                class="pm-input"
+                placeholder="Ex.: GitHub"
+                required
+              />
+            </div>
+            <div class="pm-field">
+              <label for="entryUser">Utilizador <span class="pm-optional">(opcional)</span></label>
+              <input
+                id="entryUser"
+                name="username"
+                type="text"
+                class="pm-input"
+                placeholder="Email ou nome de utilizador"
+              />
+            </div>
+            <div class="pm-field">
+              <label for="entrySecret">Senha</label>
+              <input
+                id="entrySecret"
+                name="secret"
+                type="password"
+                class="pm-input"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <div class="pm-field">
+              <label for="entryNotes">Notas <span class="pm-optional">(opcional)</span></label>
+              <input
+                id="entryNotes"
+                name="notes"
+                type="text"
+                class="pm-input"
+                placeholder="Opcional"
+              />
+            </div>
+            <button id="quickSaveBtn" type="submit" class="pm-btn-primary">Guardar no cofre</button>
+            <p id="vaultMsg" class="pm-msg" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <button id="logoutBtn" type="button" class="pm-btn-ghost">Sair da conta</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="api-config.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
