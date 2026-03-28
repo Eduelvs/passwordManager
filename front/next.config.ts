@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /** Railway: definir NEXT_PUBLIC_API_URL antes do build (URL pública da API, ex. https://xxx.up.railway.app). */
+  /** Opcional: embute NEXT_PUBLIC no bundle; o cliente também usa GET /api/config + API_URL em runtime. */
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },

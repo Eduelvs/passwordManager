@@ -2,14 +2,7 @@ import {
   clearStoredAccessToken,
   getStoredAccessToken,
 } from "@/lib/auth-token";
-
-function getBaseUrl(): string {
-  const raw =
-    process.env.NEXT_PUBLIC_API_URL ?? process.env.API_URL ?? "http://localhost:3000";
-  return raw.replace(/\/$/, "");
-}
-
-const baseUrl = getBaseUrl();
+import { resolveApiBaseUrl } from "@/lib/resolve-api-base-url";
 
 let warnedWrongApiHost = false;
 
@@ -25,8 +18,8 @@ function warnIfProdFrontCallsLocalhost(url: string) {
     if (isLocalApi && onDeployedFront) {
       warnedWrongApiHost = true;
       console.error(
-        "[passwordManager] A API aponta para localhost, mas o site está em produção. " +
-          "Defina NEXT_PUBLIC_API_URL na Railway (serviço do front) com a URL HTTPS da API e faça redeploy.",
+        "[passwordManager] A API resolveu para localhost em produção. " +
+          "No serviço do front na Railway, defina API_URL com a URL HTTPS da API e redeploy.",
       );
     }
   } catch {
@@ -63,7 +56,8 @@ export async function apiFetch<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const url = path.startsWith("http") ? path : `${baseUrl}${path}`;
+  const base = await resolveApiBaseUrl();
+  const url = path.startsWith("http") ? path : `${base}${path}`;
   warnIfProdFrontCallsLocalhost(url);
   const token = getStoredAccessToken();
   const res = await fetch(url, {
