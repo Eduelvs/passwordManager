@@ -1,3 +1,5 @@
+import { normalizeApiBaseUrl } from "@/lib/normalize-api-base-url";
+
 /**
  * No browser, a URL da API vem de GET /api/config (servidor Next lê API_URL em runtime).
  * Assim a Railway pode definir só `API_URL` no serviço do front, sem falhar o bundle.
@@ -14,7 +16,7 @@ export async function resolveApiBaseUrl(): Promise<string> {
       process.env.NEXT_PUBLIC_API_URL ??
       process.env.API_URL ??
       "http://localhost:3000";
-    cached = raw.replace(/\/$/, "");
+    cached = normalizeApiBaseUrl(raw);
     return cached;
   }
 
@@ -25,7 +27,7 @@ export async function resolveApiBaseUrl(): Promise<string> {
     throw new Error(`Falha ao obter /api/config (${res.status})`);
   }
   const data = (await res.json()) as { apiBaseUrl: string };
-  cached = String(data.apiBaseUrl).replace(/\/$/, "");
+  cached = normalizeApiBaseUrl(String(data.apiBaseUrl));
   return cached;
 }
 
