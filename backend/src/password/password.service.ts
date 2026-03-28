@@ -3,6 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import type { Password as PasswordRow } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreatePasswordDto } from './dto/create-password.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 
@@ -19,50 +21,68 @@ export type PasswordEntry = {
 
 @Injectable()
 export class PasswordService {
-  private readonly byId = new Map<string, PasswordEntry>();
+  constructor(private readonly prisma: PrismaService) {}
 
-  create(userId: string, dto: CreatePasswordDto): PasswordEntry {
-    const now = new Date().toISOString();
-    const row: PasswordEntry = {
-      id: crypto.randomUUID(),
-      userId,
-      title: dto.title,
-      username: dto.username ?? null,
-      secret: dto.secret,
-      notes: dto.notes ?? null,
-      createdAt: now,
-      updatedAt: now,
+  private toEntry(row: PasswordRow): PasswordEntry {
+    return {
+      id: row.id,
+      userId: row.userId,
+      title: row.title,
+      username: row.username,
+      secret: row.secret,
+      notes: row.notes,
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
     };
-    this.byId.set(row.id, row);
-    return row;
   }
 
-  list(userId: string): PasswordEntry[] {
-    return [...this.byId.values()].filter((p) => p.userId === userId);
+  async create(userId: string, dto: CreatePasswordDto): Promise<PasswordEntry> {
+    const row = await this.prisma.password.create({
+      data: {
+        userId,
+        title: dto.title,
+        username: dto.username ?? null,
+        secret: dto.secret,
+        notes: dto.notes ?? null,
+      },
+    });
+    return this.toEntry(row);
   }
 
-  getOne(userId: string, id: string): PasswordEntry {
-    const row = this.byId.get(id);
+  async list(userId: string): Promise<PasswordEntry[]> {
+    const rows = await this.prisma.password.findMany({
+      where: { userId },
+      orderBy: { updatedAt: 'desc' },
+    });
+    return rows.map((r) => this.toEntry(r));
+  }
+
+  async getOne(userId: string, id: string): Promise<PasswordEntry> {
+    const row = await this.prisma.password.findUnique({ where: { id } });
     if (!row) {
       throw new NotFoundException('Registro não encontrado');
     }
     if (row.userId !== userId) {
       throw new ForbiddenException();
     }
-    return row;
+    return this.toEntry(row);
   }
 
-  update(userId: string, id: string, dto: UpdatePasswordDto): PasswordEntry {
-    const row = this.getOne(userId, id);
-    const next: PasswordEntry = {
-      ...row,
-      ...(dto.title !== undefined && { title: dto.title }),
-      ...(dto.username !== undefined && { username: dto.username || null }),
-      ...(dto.secret !== undefined && { secret: dto.secret }),
-      ...(dto.notes !== undefined && { notes: dto.notes || null }),
-      updatedAt: new Date().toISOString(),
-    };
-    this.byId.set(id, next);
-    return next;
+  async update(
+    userId: string,
+    id: string,
+    dto: UpdatePasswordDto,
+  ): Promise<PasswordEntry> {
+    await this.getOne(userId, id);
+    const row = await this.prisma.password.update({
+      where: { id },
+      data: {
+        ...(dto.title !== undefined && { title: dto.title }),
+        ...(dto.username !== undefined && { username: dto.username || null }),
+        ...(dto.secret !== undefined && { secret: dto.secret }),
+        ...(dto.notes !== undefined && { notes: dto.notes || null }),
+      },
+    });
+    return this.toEntry(row);
   }
 }
