@@ -1,0 +1,153 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Leva } from "leva";
+import { GL } from "@/components/gl";
+import { Logo } from "@/components/logo";
+import { appendVault } from "@/lib/vault-mock";
+import { cn } from "@/lib/utils";
+
+const fieldClass =
+  "w-full h-12 px-4 rounded-lg bg-white/[0.06] border border-border font-mono text-sm text-foreground placeholder:text-foreground/35 outline-none transition-[border-color,box-shadow] duration-200 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/25";
+
+export default function PasswordCreatePage() {
+  const router = useRouter();
+  const [formActive, setFormActive] = useState(false);
+  const [btnHover, setBtnHover] = useState(false);
+  const hovering = formActive || btnHover;
+
+  const handleFormBlurCapture = (e: React.FocusEvent<HTMLFormElement>) => {
+    const next = e.relatedTarget as Node | null;
+    if (next && e.currentTarget.contains(next)) return;
+    setFormActive(false);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const platform = String(fd.get("platform") ?? "").trim();
+    const login = String(fd.get("login") ?? "").trim();
+    const password = String(fd.get("password") ?? "");
+    if (!platform || !login || !password) return;
+
+    appendVault({ platform, login, password });
+    e.currentTarget.reset();
+    router.push("/password/consult");
+  };
+
+  return (
+    <>
+      <Leva hidden />
+      <div className="relative min-h-svh text-foreground">
+        <GL hovering={hovering} />
+
+        <div className="relative z-10 flex min-h-svh flex-col">
+          <header className="border-b border-border/50 bg-black/40 backdrop-blur-xl">
+            <div className="container flex h-16 items-center justify-between gap-4">
+              <Link href="/" aria-label="Início">
+                <Logo className="w-[80px]" />
+              </Link>
+              <nav className="flex items-center gap-6 font-mono text-xs uppercase tracking-widest text-foreground/50">
+                <span className="text-primary">Nova</span>
+                <Link
+                  href="/password/consult"
+                  className="transition-colors hover:text-foreground"
+                >
+                  Consultar
+                </Link>
+              </nav>
+            </div>
+          </header>
+
+          <main className="container flex flex-1 max-w-md flex-col py-12 md:py-20">
+            <div
+              className={cn(
+                "rounded-2xl border border-border/70 bg-black/50 p-8 shadow-[0_0_0_1px_rgba(255,199,0,0.05)] backdrop-blur-md transition-[box-shadow,background-color] duration-500 md:p-10",
+                formActive &&
+                  "bg-black/55 shadow-[0_0_50px_-16px_rgba(255,199,0,0.12)]"
+              )}
+            >
+              <h1 className="font-sentient text-3xl tracking-tight">
+                Nova senha
+              </h1>
+              <p className="mt-2 font-mono text-sm text-foreground/50">
+                Mock local — dados ficam só neste navegador.
+              </p>
+
+              <form
+                onSubmit={handleSubmit}
+                className="mt-10 space-y-6"
+                onFocusCapture={() => setFormActive(true)}
+                onBlurCapture={handleFormBlurCapture}
+              >
+          <div className="space-y-2">
+            <label
+              htmlFor="platform"
+              className="font-mono text-xs uppercase tracking-widest text-foreground/45"
+            >
+              Plataforma
+            </label>
+            <input
+              id="platform"
+              name="platform"
+              className={fieldClass}
+              placeholder="ex. GitHub"
+              autoComplete="off"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label
+              htmlFor="login"
+              className="font-mono text-xs uppercase tracking-widest text-foreground/45"
+            >
+              Login
+            </label>
+            <input
+              id="login"
+              name="login"
+              className={fieldClass}
+              placeholder="e-mail ou usuário"
+              autoComplete="username"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label
+              htmlFor="password"
+              className="font-mono text-xs uppercase tracking-widest text-foreground/45"
+            >
+              Senha
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              className={fieldClass}
+              placeholder="••••••••"
+              autoComplete="new-password"
+              required
+            />
+          </div>
+
+                <button
+                  type="submit"
+                  onMouseEnter={() => setBtnHover(true)}
+                  onMouseLeave={() => setBtnHover(false)}
+                  className={cn(
+                    "w-full rounded-lg border border-primary bg-primary/10 py-3 font-mono text-sm uppercase tracking-wider text-primary transition-colors",
+                    "hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                  )}
+                >
+                  Salvar
+                </button>
+              </form>
+            </div>
+          </main>
+        </div>
+      </div>
+    </>
+  );
+}
