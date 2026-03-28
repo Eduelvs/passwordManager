@@ -8,7 +8,20 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
 
-  app.enableCors({ origin: true, credentials: true });
+  const corsList = process.env.CORS_ORIGINS?.split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  app.enableCors({
+    origin: corsList?.length ? corsList : true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
+  if (corsList?.length) {
+    logger.log(`CORS: origens permitidas: ${corsList.join(', ')}`);
+  }
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

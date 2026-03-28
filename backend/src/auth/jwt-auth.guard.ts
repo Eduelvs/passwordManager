@@ -12,14 +12,24 @@ import type { JwtUser } from '../common/decorators/current-user.decorator';
 export class JwtAuthGuard implements CanActivate {
   constructor(private readonly jwt: JwtService) {}
 
+  /** Cookie (ex. Swagger na mesma origem) ou `Authorization: Bearer` (ex. front noutro domínio). */
+  private extractToken(req: Request): string | null {
+    const auth = req.headers.authorization;
+    if (typeof auth === 'string' && auth.toLowerCase().startsWith('bearer ')) {
+      const t = auth.slice(7).trim();
+      if (t.length > 0) return t;
+    }
+    const c = req.cookies?.token;
+    if (typeof c === 'string' && c.length > 0) return c;
+    return null;
+  }
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest<Request>();
-    // req.cookies é Record<string, any> em @types/cookie-parser
-    const raw: unknown = req.cookies?.token;
-    if (typeof raw !== 'string' || raw.length === 0) {
+    const token = this.extractToken(req);
+    if (!token) {
       throw new UnauthorizedException('Token ausente');
     }
-    const token = raw;
     try {
       const payload = await this.jwt.verifyAsync<JwtUser>(token);
       (req as Request & { user: JwtUser }).user = payload;

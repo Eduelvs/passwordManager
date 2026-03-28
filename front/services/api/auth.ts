@@ -4,7 +4,7 @@ import type { AuthUser } from "../types";
 export type LoginBody = { email: string; password: string };
 export type RegisterBody = LoginBody;
 
-export type AuthResponse = { user: AuthUser };
+export type AuthResponse = { user: AuthUser; accessToken: string };
 
 export const authApi = {
   register: (body: RegisterBody) =>
