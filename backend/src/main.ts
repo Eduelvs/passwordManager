@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
@@ -7,6 +7,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const logger = new Logger('Bootstrap');
 
   app.enableCors({ origin: true, credentials: true });
   app.useGlobalPipes(
@@ -16,7 +17,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  app.use(cookieParser as any);
+  app.use(cookieParser());
 
   const config = new DocumentBuilder()
     .setTitle('Password Manager API')
@@ -32,7 +33,18 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  await app.listen(3001);
+  const port = Number(process.env.PORT) || 3000;
+  await app.listen(port);
+  logger.log(
+    `API em http://127.0.0.1:${port}  |  Swagger: http://127.0.0.1:${port}/docs`,
+  );
 }
 
-void bootstrap();
+bootstrap().catch((err: unknown) => {
+  const logger = new Logger('Bootstrap');
+  logger.error(
+    'Falha ao subir o servidor',
+    err instanceof Error ? err.stack : String(err),
+  );
+  process.exit(1);
+});

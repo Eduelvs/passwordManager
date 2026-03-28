@@ -1,4 +1,13 @@
 {
+  "include": ["src/**/*", "test/**/*"],
+  "exclude": ["node_modules", "dist"],
+  "watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority",
+    "synchronousWatchDirectory": true,
+    "excludeDirectories": ["**/node_modules", "**/dist", "**/prisma"]
+  },
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
