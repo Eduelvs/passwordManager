@@ -1,5 +1,6 @@
 "use client";
 
+import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
 import { GL } from "@/components/gl";
 import { EduelvsMark } from "@/components/eduelvs-mark";
 import { useRedirectOn401 } from "@/hooks/use-redirect-on-401";
@@ -39,6 +40,10 @@ export default function PasswordConsultPage() {
   const [visible, setVisible] = useState<Record<string, boolean>>({});
   const [panelActive, setPanelActive] = useState(false);
   const [tableHot, setTableHot] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
   const hovering = panelActive || tableHot;
 
   const handlePanelBlurCapture = (e: React.FocusEvent<HTMLDivElement>) => {
@@ -243,21 +248,12 @@ export default function PasswordConsultPage() {
                               <button
                                 type="button"
                                 disabled={removePassword.isPending}
-                                onClick={() => {
-                                  if (
-                                    !confirm(
-                                      `Apagar "${row.title}"? Esta ação não pode ser desfeita.`,
-                                    )
-                                  ) {
-                                    return;
-                                  }
-                                  removePassword.mutate(row.id, {
-                                    onSuccess: () =>
-                                      toast.success("Registo apagado"),
-                                    onError: () =>
-                                      toast.error("Não foi possível apagar"),
-                                  });
-                                }}
+                                onClick={() =>
+                                  setDeleteTarget({
+                                    id: row.id,
+                                    title: row.title,
+                                  })
+                                }
                                 className="font-mono text-xs uppercase tracking-wide text-red-400/90 underline-offset-4 transition-colors hover:text-red-300 hover:underline disabled:opacity-50"
                               >
                                 Apagar
@@ -274,6 +270,30 @@ export default function PasswordConsultPage() {
           </main>
         </div>
       </div>
+
+      <ConfirmDeleteDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+        title="Apagar este registo?"
+        description={
+          deleteTarget
+            ? `O registo «${deleteTarget.title}» será eliminado permanentemente. Esta ação não pode ser desfeita.`
+            : ""
+        }
+        isPending={removePassword.isPending}
+        onConfirm={() => {
+          if (!deleteTarget) return;
+          removePassword.mutate(deleteTarget.id, {
+            onSuccess: () => {
+              toast.success("Registo apagado");
+              setDeleteTarget(null);
+            },
+            onError: () => toast.error("Não foi possível apagar"),
+          });
+        }}
+      />
     </>
   );
 }

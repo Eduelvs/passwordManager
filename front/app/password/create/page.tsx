@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import { Leva } from "leva";
 import { GL } from "@/components/gl";
 import { EduelvsMark } from "@/components/eduelvs-mark";
@@ -37,37 +37,36 @@ export default function PasswordCreatePage() {
     setFormActive(false);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     const title = String(fd.get("platform") ?? "").trim();
     const username = String(fd.get("login") ?? "").trim();
     const secret = String(fd.get("password") ?? "");
     const notesRaw = String(fd.get("notes") ?? "").trim();
     if (!title || !secret) return;
 
-    create.mutate(
-      {
+    try {
+      await create.mutateAsync({
         title,
         secret,
         ...(username ? { username } : {}),
         ...(notesRaw ? { notes: notesRaw } : {}),
-      },
-      {
-        onSuccess: () => {
-          toast.success("Senha guardada");
-          e.currentTarget.reset();
-          router.push("/password/consult");
-        },
-        onError: (err) => {
-          const msg =
-            err instanceof ApiError
-              ? err.message
-              : "Não foi possível guardar.";
-          toast.error(msg);
-        },
-      },
-    );
+      });
+      toast.success("Senha guardada");
+      form.reset();
+      startTransition(() => {
+        router.push("/password/consult");
+        router.refresh();
+      });
+    } catch (err) {
+      const msg =
+        err instanceof ApiError
+          ? err.message
+          : "Não foi possível guardar.";
+      toast.error(msg);
+    }
   };
 
   return (

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Leva } from "leva";
+import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
 import { GL } from "@/components/gl";
 import { EduelvsMark } from "@/components/eduelvs-mark";
 import { useRedirectOn401 } from "@/hooks/use-redirect-on-401";
@@ -34,6 +35,7 @@ export default function PasswordEditPage() {
   const remove = useDeletePasswordMutation();
   const [formActive, setFormActive] = useState(false);
   const [btnHover, setBtnHover] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const hovering = formActive || btnHover;
 
   const handleFormBlurCapture = (e: React.FocusEvent<HTMLFormElement>) => {
@@ -237,27 +239,10 @@ export default function PasswordEditPage() {
                   <button
                     type="button"
                     disabled={update.isPending || remove.isPending}
-                    onClick={() => {
-                      if (
-                        !confirm(
-                          "Apagar este registo permanentemente? Esta ação não pode ser desfeita.",
-                        )
-                      ) {
-                        return;
-                      }
-                      if (!id) return;
-                      remove.mutate(id, {
-                        onSuccess: () => {
-                          toast.success("Registo apagado");
-                          router.push("/password/consult");
-                        },
-                        onError: () =>
-                          toast.error("Não foi possível apagar"),
-                      });
-                    }}
+                    onClick={() => setDeleteDialogOpen(true)}
                     className="w-full rounded-lg border border-red-500/40 bg-red-500/10 py-3 font-mono text-sm uppercase tracking-wider text-red-400 transition-colors hover:bg-red-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/30 disabled:opacity-50"
                   >
-                    {remove.isPending ? "A apagar…" : "Apagar registo"}
+                    Apagar registo
                   </button>
                 </form>
               ) : null}
@@ -265,6 +250,29 @@ export default function PasswordEditPage() {
           </main>
         </div>
       </div>
+
+      <ConfirmDeleteDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Apagar este registo?"
+        description={
+          data
+            ? `«${data.title}» será eliminado permanentemente. Esta ação não pode ser desfeita.`
+            : "Este registo será eliminado permanentemente. Esta ação não pode ser desfeita."
+        }
+        isPending={remove.isPending}
+        onConfirm={() => {
+          if (!id) return;
+          remove.mutate(id, {
+            onSuccess: () => {
+              setDeleteDialogOpen(false);
+              toast.success("Registo apagado");
+              router.push("/password/consult");
+            },
+            onError: () => toast.error("Não foi possível apagar"),
+          });
+        }}
+      />
     </>
   );
 }
