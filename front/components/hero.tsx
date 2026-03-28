@@ -26,18 +26,20 @@ export function Hero() {
         </p>
 
         <div className="flex items-center justify-center gap-4">
-          <Link className="inline-block max-sm:hidden" href="/sign-in">
-            <div
-              className={cn(
-                "glass-backdrop mt-14 inline-flex cursor-pointer items-center justify-center rounded-full border px-6 py-3 text-white! transition-all duration-300 ease-out active:scale-[0.98] active:translate-y-0 motion-reduce:transition-colors motion-reduce:hover:scale-100 motion-reduce:hover:translate-y-0",
-                "border-primary-foreground/8 bg-primary/3 shadow-[0_4px_24px_rgba(0,0,0,0.04)] dark:border-white/8 dark:bg-white/4 dark:text-primary-foreground dark:shadow-[0_4px_24px_rgba(0,0,0,0.15)]",
-              )}
-              onMouseEnter={() => setHovering(true)}
-              onMouseLeave={() => setHovering(false)}
-            >
-              Entrar
-            </div>
-          </Link>
+          { !isAuthenticated && (
+            <Link className="inline-block max-sm:hidden" href="/sign-in">
+              <div
+                className={cn(
+                  "glass-backdrop mt-14 inline-flex cursor-pointer items-center justify-center rounded-full border px-6 py-3 text-white! transition-all duration-300 ease-out active:scale-[0.98] active:translate-y-0 motion-reduce:transition-colors motion-reduce:hover:scale-100 motion-reduce:hover:translate-y-0",
+                  "border-primary-foreground/8 bg-primary/3 shadow-[0_4px_24px_rgba(0,0,0,0.04)] dark:border-white/8 dark:bg-white/4 dark:text-primary-foreground dark:shadow-[0_4px_24px_rgba(0,0,0,0.15)]",
+                )}
+                onMouseEnter={() => setHovering(true)}
+                onMouseLeave={() => setHovering(false)}
+              >
+                Entrar
+              </div>
+            </Link>
+          )}
           { isAuthenticated && (
             <Link className="inline-block max-sm:hidden" href="/password/consult">
               <div
