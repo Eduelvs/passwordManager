@@ -35,9 +35,8 @@ async function bootstrap() {
 
   const port = Number(process.env.PORT) || 3000;
   await app.listen(port, '0.0.0.0');
-  logger.log(
-    `API em http://127.0.0.1:${port}  |  Swagger: http://127.0.0.1:${port}/docs`,
-  );
+  logger.log(`API rodando na porta ${port}`);
+  logger.log(`Swagger disponível em /docs`);
 }
 
 bootstrap().catch((err: unknown) => {
