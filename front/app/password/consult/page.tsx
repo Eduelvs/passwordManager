@@ -96,12 +96,14 @@ export default function PasswordConsultPage() {
                 <EduelvsMark variant="header" />
               </Link>
               <nav className="flex items-center gap-6 font-mono text-xs uppercase tracking-widest text-foreground/50">
-                <Link
-                  href="/password/create"
-                  className="transition-colors hover:text-foreground"
-                >
-                  Nova
-                </Link>
+                <div className="flex items-center gap-6 bg-white/90 rounded-full p-2 hover:scale-105 transition-all duration-300">
+                  <Link
+                    href="/password/create"
+                    className="transition-colors hover:text-black/85 text-black"
+                  >
+                    Adicionar uma nova senha
+                  </Link>
+                </div>
                 <span className="text-primary">Consultar</span>
                 <button
                   type="button"
