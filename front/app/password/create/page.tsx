@@ -82,7 +82,6 @@ export default function PasswordCreatePage() {
                 <EduelvsMark variant="header" />
               </Link>
               <nav className="flex items-center gap-6 font-mono text-xs uppercase tracking-widest text-foreground/50">
-                <span className="text-primary">Nova</span>
                 <Link
                   href="/password/consult"
                   className="transition-colors hover:text-foreground"
