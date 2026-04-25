@@ -23,7 +23,7 @@ jobs:
             backend/package-lock.json
 
       - name: Install Frontend deps
-        run: npm ci
+        run: npm i
         working-directory: front
 
       - name: Build Frontend
@@ -31,7 +31,7 @@ jobs:
         working-directory: front
 
       - name: Install Backend deps
-        run: npm ci
+        run: npm i
         working-directory: backend
 
       - name: Build Backend
